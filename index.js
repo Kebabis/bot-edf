@@ -1,4 +1,5 @@
 const { Client, Intents, MessageEmbed, Message } = require("discord.js");
+const aleatorio = require("./comandos/apostas");
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -7,7 +8,6 @@ const client = new Client({
   ],
   partials: ["MESSAGE", "REACTION", "USER"],
 });
-const { apostas } = require("./comandos/apostas");
 const { token } = require("./config.json");
 client.once("ready", () => {
   console.log("Pai ta on 😎");
@@ -16,6 +16,12 @@ client.once("ready", () => {
 client.on("messageCreate", async (mensagem) => {
   if (mensagem.content.startsWith("!apostar")) {
     const separado = mensagem.content.split(" ");
+    const resul = aleatorio();
+    if (resul === true) {
+      console.log("ganhou");
+    } else {
+      console.log("perdeu");
+    }
   }
 });
 
