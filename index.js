@@ -11,6 +11,9 @@ const client = new Client({
 const { token } = require("./config.json");
 client.once("ready", () => {
   console.log("Pai ta on 😎");
+  var db = new JsonDB(new Config("usuarios", true, false, "/"));
+
+  db.push("/teste", 3);
 });
 
 client.on("messageCreate", async (mensagem) => {
