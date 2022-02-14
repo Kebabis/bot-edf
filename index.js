@@ -8,15 +8,16 @@ const client = new Client({
   ],
   partials: ["MESSAGE", "REACTION", "USER"],
 });
+const banco = require("./db/db");
 const { token } = require("./config.json");
 client.once("ready", () => {
   console.log("Pai ta on 😎");
-  var db = new JsonDB(new Config("usuarios", true, false, "/"));
-
-  db.push("/teste", 3);
 });
 
 client.on("messageCreate", async (mensagem) => {
+  if (mensagem.content.startsWith("!registrar")) {
+    banco(mensagem.author);
+  }
   if (mensagem.content.startsWith("!apostar")) {
     const separado = mensagem.content.split(" ");
     const resul = aleatorio();
