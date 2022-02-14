@@ -10,11 +10,16 @@ const client = new Client({
 });
 const banco = require("./db/db");
 const { token } = require("./config.json");
+const escolherlocal = require("./comandos/local");
 client.once("ready", () => {
   console.log("Pai ta on 😎");
 });
 var embed;
+
 client.on("messageCreate", async (mensagem) => {
+  if (mensagem.content.startsWith("!depositar")) {
+  }
+
   if (mensagem.content.startsWith("!bal")) {
     const dados = banco.procurar(mensagem.author.id);
     if (dados === false) {
@@ -29,13 +34,21 @@ client.on("messageCreate", async (mensagem) => {
         .setTitle("Banco")
         .setColor("#668099")
         .setDescription(
-          `O saldo de <@${dados.id}> é de R$ ${dados.dinheiro},00`
+          `O saldo de <@${mensagem.author.id}> é de: \n No banco: R$ ${
+            dados.banco
+          },00 \n Na mão: R$ ${dados.dinheiromao},00 \n Total: R$ ${
+            dados.dinheiromao + dados.banco
+          },00 `
+        )
+        .setFooter(
+          `Comando enviado por ${mensagem.author.username}#${mensagem.author.discriminator} (${mensagem.author.id})`
         );
     }
     mensagem.channel.send({ embeds: [embed] });
   }
+
   if (mensagem.content.startsWith("!trabalhar")) {
-    var ganhos = banco.dinheiros(true, mensagem.author.id);
+    var ganhos = banco.dinheiros(true, mensagem.author);
     if (ganhos === false) {
       embed = new MessageEmbed()
         .setTitle("Erro")
@@ -44,27 +57,32 @@ client.on("messageCreate", async (mensagem) => {
           `<@${mensagem.author.id}> Antes de usar comandos é necessario se registrar utilizando o comando !registrar`
         );
     } else {
-      const dados = banco.procurar(mensagem.author.id);
+      local = escolherlocal();
       embed = new MessageEmbed()
         .setTitle("Trabalho")
         .setColor(0x00ae86)
         .setDescription(
-          `<@${dados.id}> trabalhou em uma lojinha e ganhou R$ ${ganhos},00`
+          `<@${mensagem.author.id}> trabalhou em ${local} e ganhou R$ ${ganhos},00`
+        )
+        .setFooter(
+          `Comando enviado por ${mensagem.author.username}#${mensagem.author.discriminator} (${mensagem.author.id})`
         );
     }
     mensagem.channel.send({ embeds: [embed] });
   }
+
   if (mensagem.content.startsWith("!registrar")) {
     banco.registrar(mensagem.author);
     mensagem.channel.send("Registrado com sucesso!");
   }
+
   if (mensagem.content.startsWith("!apostar")) {
     const separado = mensagem.content.split(" ");
     const resul = aleatorio();
     if (resul === true) {
-      console.log("ganhou");
+      banco.aposta(resul, separado[1], mensagem.author.id);
     } else {
-      console.log("perdeu");
+      banco.aposta(resul, separado[1], mensagem.author.id);
     }
   }
 });
