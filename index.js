@@ -13,25 +13,45 @@ const { token } = require("./config.json");
 client.once("ready", () => {
   console.log("Pai ta on 😎");
 });
-
+var embed;
 client.on("messageCreate", async (mensagem) => {
   if (mensagem.content.startsWith("!bal")) {
     const dados = banco.procurar(mensagem.author.id);
-    const embed = new MessageEmbed()
-      .setTitle("Banco")
-      .setColor("#668099")
-      .setDescription(`O saldo de <@${dados.id}> é de R$ ${dados.dinheiro},00`);
+    if (dados === false) {
+      embed = new MessageEmbed()
+        .setTitle("Erro")
+        .setColor("#ed1212")
+        .setDescription(
+          `<@${mensagem.author.id}> Antes de usar comandos é necessario se registrar utilizando o comando !registrar`
+        );
+    } else {
+      embed = new MessageEmbed()
+        .setTitle("Banco")
+        .setColor("#668099")
+        .setDescription(
+          `O saldo de <@${dados.id}> é de R$ ${dados.dinheiro},00`
+        );
+    }
     mensagem.channel.send({ embeds: [embed] });
   }
   if (mensagem.content.startsWith("!trabalhar")) {
     var ganhos = banco.dinheiros(true, mensagem.author.id);
-    const dados = banco.procurar(mensagem.author.id);
-    const embed = new MessageEmbed()
-      .setTitle("Trabalho")
-      .setColor(0x00ae86)
-      .setDescription(
-        `<@${dados.id}> trabalhou em uma lojinha e ganhou R$ ${ganhos},00`
-      );
+    if (ganhos === false) {
+      embed = new MessageEmbed()
+        .setTitle("Erro")
+        .setColor("#ed1212")
+        .setDescription(
+          `<@${mensagem.author.id}> Antes de usar comandos é necessario se registrar utilizando o comando !registrar`
+        );
+    } else {
+      const dados = banco.procurar(mensagem.author.id);
+      embed = new MessageEmbed()
+        .setTitle("Trabalho")
+        .setColor(0x00ae86)
+        .setDescription(
+          `<@${dados.id}> trabalhou em uma lojinha e ganhou R$ ${ganhos},00`
+        );
+    }
     mensagem.channel.send({ embeds: [embed] });
   }
   if (mensagem.content.startsWith("!registrar")) {
